@@ -10,10 +10,14 @@ RUN npm ci \
     --omit=dev \
     --no-update-notifier \
     --no-fund \
-    --no-audit \
-    && chown -R node-red:root /data
+    --no-audit
 
 COPY --chown=node-red:root flows.json settings.js ./
+
+RUN chown -R node-red:root /data \
+    && chmod -R g+rwX /data
+
+WORKDIR /usr/src/node-red
 
 USER node-red
 
