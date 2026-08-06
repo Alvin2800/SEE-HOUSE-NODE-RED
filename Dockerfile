@@ -1,12 +1,20 @@
 FROM nodered/node-red:4.1.10
 
+USER root
+
 WORKDIR /data
 
-COPY package*.json ./
+COPY --chown=node-red:root package.json package-lock.json ./
 
-RUN npm install --no-update-notifier --no-fund --omit=dev
+RUN npm ci \
+    --omit=dev \
+    --no-update-notifier \
+    --no-fund \
+    --no-audit \
+    && chown -R node-red:root /data
 
-COPY flows.json .
-COPY settings.js .
+COPY --chown=node-red:root flows.json settings.js ./
+
+USER node-red
 
 EXPOSE 1880
