@@ -1,0 +1,429 @@
+[
+    {
+        "id": "5dc7e2d00847886e",
+        "type": "tab",
+        "label": "ESP32-FUEL-DATA",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6a90bd151f8e3524",
+        "type": "tab",
+        "label": "ESP32-METEO-DATA",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f2f001059f29ec6b",
+        "type": "tab",
+        "label": "pipelineData",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "aac8e7db37d22edc",
+        "type": "mqtt-broker",
+        "name": "broker.hivemq.com",
+        "broker": "broker.hivemq.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "345019c808e93326",
+        "type": "MySQLdatabase",
+        "name": "iot-base",
+        "host": "junction.proxy.rlwy.net",
+        "port": "42792",
+        "db": "railway",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "2df893551531d671",
+        "type": "influxdb",
+        "hostname": "https://us-east-1-1.aws.cloud2.influxdata.com",
+        "port": "443",
+        "protocol": "http",
+        "database": "database",
+        "name": "iot_fuel",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://us-east-1-1.aws.cloud2.influxdata.com",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "f04c20ec285ffae4",
+        "type": "influxdb",
+        "hostname": "https://us-east-1-1.aws.cloud2.influxdata.com/",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "iot_pipeline",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://us-east-1-1.aws.cloud2.influxdata.com/",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "d4fed1c1d1e94329",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "Influx Cloud",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://us-east-1-1.aws.cloud2.influxdata.com/",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "8352762a25e6102c",
+        "type": "mqtt in",
+        "z": "5dc7e2d00847886e",
+        "name": "alvin/iot/fuel_level",
+        "topic": "alvin/iot/fuel_level",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "aac8e7db37d22edc",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 220,
+        "wires": [
+            [
+                "bd5b007cd083bbf6"
+            ]
+        ]
+    },
+    {
+        "id": "b6d1312d5bbba276",
+        "type": "debug",
+        "z": "5dc7e2d00847886e",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "bd5b007cd083bbf6",
+        "type": "function",
+        "z": "5dc7e2d00847886e",
+        "name": "function 1",
+        "func": "let distance = Number(msg.payload.distance);\nlet alert = Number(msg.payload.alert || 0);\nlet status = msg.payload.status || \"NORMAL\";\n\nmsg.topic = `\nINSERT INTO log_distance_mqtt\n(timestamp, distance, alert, event_type, event)\nVALUES\n(NOW(), ${distance}, ${alert}, '${status}', 'NODE_RED')\n`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 220,
+        "wires": [
+            [
+                "b3df95d7a7289b64"
+            ]
+        ]
+    },
+    {
+        "id": "b3df95d7a7289b64",
+        "type": "mysql",
+        "z": "5dc7e2d00847886e",
+        "mydb": "",
+        "name": "iot-base",
+        "x": 600,
+        "y": 120,
+        "wires": [
+            [
+                "b6d1312d5bbba276"
+            ]
+        ]
+    },
+    {
+        "id": "bb17f9440cad73fb",
+        "type": "mqtt in",
+        "z": "5dc7e2d00847886e",
+        "name": "alvin/iot/fuel_level",
+        "topic": "alvin/iot/fuel_level",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "aac8e7db37d22edc",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 380,
+        "wires": [
+            [
+                "9d2aae26fb91c7ab"
+            ]
+        ]
+    },
+    {
+        "id": "990e4d4980292418",
+        "type": "influxdb out",
+        "z": "5dc7e2d00847886e",
+        "influxdb": "",
+        "name": "",
+        "measurement": "fuel_level",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "See-House-IOT",
+        "bucket": "iot_fuel",
+        "x": 660,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "9d2aae26fb91c7ab",
+        "type": "function",
+        "z": "5dc7e2d00847886e",
+        "name": "function 2",
+        "func": "let distance = Number(msg.payload.distance);\nlet alert = Number(msg.payload.alert || 0);\n\nmsg.measurement = \"fuel_level\";\n\nmsg.payload = {\n    distance: distance,\n    alert: alert,\n    status: distance < 100 ? \"CRITIQUE\" : \"NORMAL\",\n    device: \"esp32_fuel\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 380,
+        "wires": [
+            [
+                "990e4d4980292418"
+            ]
+        ]
+    },
+    {
+        "id": "1bbc9055666eb968",
+        "type": "mqtt in",
+        "z": "6a90bd151f8e3524",
+        "name": "",
+        "topic": "alvin/iot/ESP32",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 200,
+        "wires": [
+            [
+                "53f51a7c5150e8f8"
+            ]
+        ]
+    },
+    {
+        "id": "53f51a7c5150e8f8",
+        "type": "function",
+        "z": "6a90bd151f8e3524",
+        "name": "fonction(insertion data)",
+        "func": "let device_id = msg.payload.device_id;\nlet temperature = Number(msg.payload.temperature);\nlet humidity = Number(msg.payload.humidity);\n\nmsg.measurement = \"METEO_DATA\";\n\nmsg.payload = {\n    device_id: device_id,\n    temperature: temperature,\n    humidity: humidity,\n    status: temperature > 35 ? \"HOT\" : \"NORMAL\",\n    location: \"laboratoire\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 200,
+        "wires": [
+            [
+                "f2cc75e7cbb65e4e",
+                "cdf7ac9d074f49f2"
+            ]
+        ]
+    },
+    {
+        "id": "f2cc75e7cbb65e4e",
+        "type": "debug",
+        "z": "6a90bd151f8e3524",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "cdf7ac9d074f49f2",
+        "type": "influxdb out",
+        "z": "6a90bd151f8e3524",
+        "influxdb": "",
+        "name": "",
+        "measurement": "",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "See-House",
+        "bucket": "METEO_DATA",
+        "x": 680,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "0a10da34e07b3f8c",
+        "type": "mqtt in",
+        "z": "f2f001059f29ec6b",
+        "name": "",
+        "topic": "alvin/iot/pipelinedata",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "aac8e7db37d22edc",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 310,
+        "y": 160,
+        "wires": [
+            [
+                "ffce973644335e55"
+            ]
+        ]
+    },
+    {
+        "id": "18c08652520801bd",
+        "type": "debug",
+        "z": "f2f001059f29ec6b",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 940,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3ac0bf35f3161987",
+        "type": "influxdb out",
+        "z": "f2f001059f29ec6b",
+        "influxdb": "f04c20ec285ffae4",
+        "name": "",
+        "measurement": "salle_environment",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "See-House",
+        "bucket": "iot_pipeline",
+        "x": 1030,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "e3d2a1f4e0464101",
+        "type": "function",
+        "z": "f2f001059f29ec6b",
+        "name": "préparer influxDb",
+        "func": "let data = msg.payload;\n\n// Conversion éventuelle du JSON texte en objet JavaScript\nif (typeof data === \"string\") {\n    try {\n        data = JSON.parse(data);\n    } catch (error) {\n        node.error(\"Message JSON invalide : \" + error.message, msg);\n        return null;\n    }\n}\n\n// Conversion des mesures\nconst temperature = Number(data.temperature);\nconst humidity = Number(data.humidity);\nconst light = Number(data.light);\nconst presence = Number(data.presence);\nconst airQuality = Number(data.air_quality);\n\n// Vérification avant tout traitement\nif (\n    !Number.isFinite(temperature) ||\n    !Number.isFinite(humidity) ||\n    !Number.isFinite(light) ||\n    !Number.isFinite(presence) ||\n    !Number.isFinite(airQuality)\n) {\n    node.error(\n        \"Valeur numérique invalide : \" + JSON.stringify(data),\n        msg\n    );\n    return null;\n}\n\n// 0 = NORMAL\n// 1 = SURVEILLANCE\n// 2 = ALERTE\nlet etatCode = 0;\n\n// Température\nif (temperature > 40) {\n    etatCode = 2;\n} else if (temperature > 30) {\n    etatCode = Math.max(etatCode, 1);\n}\n\n// Humidité\nif (humidity < 30 || humidity > 80) {\n    etatCode = 2;\n} else if (humidity < 40 || humidity > 70) {\n    etatCode = Math.max(etatCode, 1);\n}\n\n// Luminosité simulée en valeur ADC\nif (light < 250 || light > 3500) {\n    etatCode = 2;\n} else if (light < 500 || light > 2500) {\n    etatCode = Math.max(etatCode, 1);\n}\n\n// Qualité de l'air simulée\nif (airQuality > 1200) {\n    etatCode = 2;\n} else if (airQuality > 800) {\n    etatCode = Math.max(etatCode, 1);\n}\n\n// Champs enregistrés dans InfluxDB\nconst fields = {\n    temperature: temperature,\n    humidity: humidity,\n    light: light,\n    presence: presence,\n    air_quality: airQuality,\n    etat_code: etatCode\n};\n\n// Tag d'identification\nconst tags = {\n    device_id: String(data.device_id || \"esp32_inconnu\")\n};\n\nmsg.payload = [fields, tags];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 750,
+        "y": 160,
+        "wires": [
+            [
+                "3ac0bf35f3161987",
+                "18c08652520801bd"
+            ]
+        ]
+    },
+    {
+        "id": "ffce973644335e55",
+        "type": "json",
+        "z": "f2f001059f29ec6b",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 510,
+        "y": 160,
+        "wires": [
+            [
+                "e3d2a1f4e0464101",
+                "117d89d9ef3b7573"
+            ]
+        ]
+    },
+    {
+        "id": "117d89d9ef3b7573",
+        "type": "debug",
+        "z": "f2f001059f29ec6b",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 80,
+        "wires": []
+    }
+]
